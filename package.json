@@ -1,0 +1,1 @@
+{"description":"One-star review of something essential: the sun is free, arrives daily, and still bills me in sunburn — make.fun entry.","engines":{"node":">=22.18"},"license":"MIT","name":"u-0xb3e689-one-star-review-of-something-essential-c7234629-bot","private":true,"scripts":{"start":"node main.ts"},"type":"module","version":"1.0.0"}
