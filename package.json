@@ -1,0 +1,1 @@
+{"description":"Real-life patch notes: v2.3.1 fixes the brain forgetting a name the instant the handshake ends — make.fun entry.","engines":{"node":">=22.18"},"license":"MIT","name":"u-0xb3e689-real-life-patch-notes-the-comedy-changelog-c5844c1d-bot","private":true,"scripts":{"start":"node main.ts"},"type":"module","version":"1.0.0"}
