@@ -1,20 +1,58 @@
-// Warning Label for Humans: One Line, Big Laugh — make.fun entry.
-// Writes one warning label to /output/entry.txt.
-// WARNING: this human may say "just one episode" and finish the entire
-// season by morning. One file, one deterministic output, no network.
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { join } from "node:path";
 
-const ENTRY_PATH = "/output/entry.txt";
+// Entry text (verbatim, no trailing newline).
+const ENTRY_TEXT = `WARNING: May say 'just one episode' and finish the entire season by morning.`;
 
-const LABEL =
-  "WARNING: May say 'just one episode' and finish the entire season by morning.";
+// Expected output size in UTF-8 bytes.
+const EXPECTED_BYTES = 76;
 
-mkdirSync("/output", { recursive: true });
-writeFileSync(ENTRY_PATH, LABEL, "utf8");
+const OUTPUT_DIR = "/output";
+const OUTPUT_PATH = join(OUTPUT_DIR, "entry.txt");
 
-// Self-check: the entry must stay exactly one line, no trailing newline,
-// or the grader reads a different label than the one above.
-const written = readFileSync(ENTRY_PATH, "utf8");
-if (written !== LABEL) {
-  throw new Error("entry.txt does not match the warning label exactly");
+function buildEntry(): string {
+  return ENTRY_TEXT;
 }
+
+function writeEntry(text: string): void {
+  mkdirSync(OUTPUT_DIR, { recursive: true });
+  writeFileSync(OUTPUT_PATH, text, "utf8");
+}
+
+function verifyEntry(expected: string): void {
+  const actual = readFileSync(OUTPUT_PATH, "utf8");
+  if (actual !== expected) {
+    throw new Error("read-back mismatch: output does not match entry text");
+  }
+  const bytes = Buffer.byteLength(actual, "utf8");
+  if (bytes !== EXPECTED_BYTES) {
+    throw new Error(`byte length mismatch: got ${bytes}, expected ${EXPECTED_BYTES}`);
+  }
+}
+
+// Second, independent verification pass: re-read the file from disk,
+// recompute its sha256 from the bytes on disk, and re-check byte length.
+function verifyOutputOnDisk(expected: string): void {
+  const onDisk = readFileSync(OUTPUT_PATH, "utf8");
+  if (onDisk !== expected) {
+    throw new Error("second read-back mismatch: file on disk differs from entry text");
+  }
+  const bytes = Buffer.byteLength(onDisk, "utf8");
+  if (bytes !== EXPECTED_BYTES) {
+    throw new Error(`second byte length mismatch: got ${bytes}, expected ${EXPECTED_BYTES}`);
+  }
+  const digest = createHash("sha256").update(onDisk, "utf8").digest("hex");
+  console.log(`verified on disk: ${bytes} bytes, sha256 ${digest}`);
+}
+
+function main(): void {
+  const entry = buildEntry();
+  writeEntry(entry);
+  verifyEntry(entry);
+  verifyOutputOnDisk(entry);
+  const digest = createHash("sha256").update(entry, "utf8").digest("hex");
+  console.log(`wrote ${OUTPUT_PATH} (${EXPECTED_BYTES} bytes, sha256 ${digest})`);
+}
+
+main();
