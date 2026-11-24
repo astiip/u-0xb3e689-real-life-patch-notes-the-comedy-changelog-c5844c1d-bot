@@ -1,0 +1,1 @@
+{"description":"Warning label for humans: may say 'just one episode' and finish the entire season by morning — make.fun entry.","engines":{"node":">=22.18"},"license":"MIT","name":"u-0xb3e689-warning-label-for-humans-one-line-big-laugh-40e31f85-bot","private":true,"scripts":{"start":"node main.ts"},"type":"module","version":"1.0.0"}
